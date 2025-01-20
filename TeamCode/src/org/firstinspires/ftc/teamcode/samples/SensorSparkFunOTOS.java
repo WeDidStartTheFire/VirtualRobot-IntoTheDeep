@@ -4,9 +4,8 @@
     Copyright (c) 2024 SparkFun Electronics
 */
 // Modified by Team Beta 8397 for use in the virtual_robot simulator
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.samples;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
