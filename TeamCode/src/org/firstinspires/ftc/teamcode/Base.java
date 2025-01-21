@@ -189,10 +189,10 @@ public abstract class Base extends LinearOpMode {
         }
 
         if (lf != null) {
-            lf.setDirection(DcMotorEx.Direction.FORWARD);
-            lb.setDirection(DcMotorEx.Direction.FORWARD);
-            rf.setDirection(DcMotorEx.Direction.REVERSE);
-            rb.setDirection(DcMotorEx.Direction.REVERSE);
+            lf.setDirection(DcMotorEx.Direction.REVERSE);
+            lb.setDirection(DcMotorEx.Direction.REVERSE);
+            rf.setDirection(DcMotorEx.Direction.FORWARD);
+            rb.setDirection(DcMotorEx.Direction.FORWARD);
 
             lf.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
             lb.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
