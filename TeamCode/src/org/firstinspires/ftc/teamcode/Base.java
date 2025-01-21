@@ -845,6 +845,7 @@ public abstract class Base extends LinearOpMode {
     }
 
     public void holdVerticalLift(int vertGoal) {
+        hold = true;
         while (active() && hold) {
             if (verticalMotorA == null) return;
             int vertA = verticalMotorA.getCurrentPosition();
