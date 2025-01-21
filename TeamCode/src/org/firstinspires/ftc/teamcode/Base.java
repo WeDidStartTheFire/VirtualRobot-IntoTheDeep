@@ -18,8 +18,6 @@ import static java.lang.Math.signum;
 import static java.lang.Math.toDegrees;
 import static java.util.Locale.US;
 
-import androidx.annotation.Nullable;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -32,13 +30,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-
-import java.util.ArrayList;
 
 // Connect to robot: adb connect 192.168.43.1:5555 OR rc
 
@@ -49,7 +42,7 @@ public abstract class Base extends LinearOpMode {
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB;
     public Servo wristServo, basketServo, specimenServo, intakeServo;
-    public DigitalChannel touchSensor;
+    public DigitalChannel verticalTouchSensor;
     public IMU imu;
     /*
      - Calculate the COUNTS_PER_INCH for your specific drive train.
@@ -79,8 +72,6 @@ public abstract class Base extends LinearOpMode {
     public boolean useOdometry = true, useCam = true;
     static final double DEFAULT_VELOCITY = 2000;
     double velocity = DEFAULT_VELOCITY;
-    public VisionPortal visionPortal;
-    private AprilTagProcessor tagProcessor;
     public SampleMecanumDrive drive;
     public Pose2d currentPose = new Pose2d();
 
@@ -166,19 +157,11 @@ public abstract class Base extends LinearOpMode {
 
         // Touch Sensors
         try {
-            touchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor"); // Port 0
+            verticalTouchSensor = hardwareMap.get(DigitalChannel.class, "touchSensor"); // Port 0
         } catch (IllegalArgumentException e) {
             except("touchSensor not connected");
         }
 
-        if (useCam) {
-            try {
-                WebcamName cam = hardwareMap.get(WebcamName.class, "Webcam 1");
-//                initProcessors(cam);
-            } catch (IllegalArgumentException e) {
-                except("Webcam not connected");
-            }
-        }
         try {
             drive = new SampleMecanumDrive(hardwareMap);
             drive.setPoseEstimate(currentPose);
@@ -383,34 +366,47 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
-     * Simplifies an angle to be between -180 and 180 degrees.
+     * Simplifies an angle in degrees to be between -180 and 180 degrees
      *
-     * @param angle Angle to be simplified
+     * @param angle Angle in degrees to be simplified
      * @return Angle now simplified between -180 and 180 degrees
      */
     public double simplifyAngle(double angle) {
-        return ((angle + 180) % 360 + 360) % 360 - 180;
+        return simplifyAngle(angle, DEGREES);
     }
 
     /**
-     * Simplifies an angle in radians to be between -pi and pi radians
+     * Simplifies an angle in degrees to be between -180 and 180 degrees or -pi and pi radians
      *
-     * @param angle Angle in radians to be simplified
-     * @return Angle now simplified between -pi and pi radians
+     * @param angle Angle
+     * @param u Whether the angle is in radians or degrees
      */
-    public double simplifyAngleRadians(double angle) {
+    public double simplifyAngle(double angle, AngleUnit u) {
+        if (u == DEGREES) return ((angle + 180) % 360 + 360) % 360 - 180;
         return ((angle + PI) % TAU + TAU) % TAU - PI;
     }
 
     /**
-     * Returns the difference between two angles.
+     * Returns the difference between two angles in degrees
      *
      * @param a First angle in degrees
      * @param b Second angle, to subtract, in degrees
      * @return The difference between the two angles in degrees
      */
     public double angleDifference(double a, double b) {
-        return simplifyAngle(a - b);
+        return angleDifference(a, b, DEGREES);
+    }
+
+    /**
+     * Returns the difference between two angles in degrees or radians
+     *
+     * @param a First angle
+     * @param b Second angle to subtract
+     * @param u Whether the angles are in radians or degrees
+     * @return The difference between the two angles in the specified unit
+     */
+    public double angleDifference(double a, double b, AngleUnit u) {
+        return simplifyAngle(a - b, u);
     }
 
     /**
@@ -549,7 +545,7 @@ public abstract class Base extends LinearOpMode {
     /**
      * Changes the velocity.
      *
-     * @param vel value.
+     * @param vel New velocity value.
      */
     public void setVelocity(double vel) {
         velocity = vel;
@@ -645,6 +641,15 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
+     * Gets the position of the intake servo.
+     *
+     * @return The position of the intake servo when connected, else -1;
+     */
+    public double getIntakePosition() {
+        return intakeServo != null ? intakeServo.getPosition() : -1;
+    }
+
+    /**
      * Moves the specimen servo to the specified position.
      *
      * @param position Position between 0 and 1 to move the servo to
@@ -661,6 +666,43 @@ public abstract class Base extends LinearOpMode {
     /** Closes the specimen servo. */
     public void closeSpecimenServo() {
         moveSpecimenServo(0);
+    }
+
+    /**
+     * Gets the position of the specimen servo.
+     *
+     * @return The position of the specimen servo when connected, else -1;
+     */
+    public double getSpecimenPosition() {
+        return specimenServo != null ? specimenServo.getPosition() : -1;
+    }
+
+    /**
+     * Moves the basket servo to the specified position.
+     *
+     * @param position The position to move the basket servo to.
+     */
+    public void moveBasketServo(double position) {
+        if (basketServo != null) basketServo.setPosition(position);
+    }
+
+    /** WARNING: Function may do the opposite - Extends the basket servo outside of the robot */
+    public void extendBasketServo() {
+        moveBasketServo(1); // Number may be wrong
+    }
+
+    /** WARNING: Function may do the opposite - Returns the basket servo to the robot */
+    public void returnBasketServo() {
+        moveBasketServo(0); // Number may be wrong
+    }
+
+    /**
+     * Gets the position of the basket servo.
+     *
+     * @return The position of the basket servo when connected, else -1;
+     */
+    public double getBasketPosition() {
+        return basketServo != null ? basketServo.getPosition() : -1;
     }
 
     /**
@@ -682,57 +724,6 @@ public abstract class Base extends LinearOpMode {
     /** Retracts the wrist. */
     public void retractWrist() {
         moveWrist(0);
-    }
-
-    /**
-     * Returns information about a tag with the specified ID if it is currently detected.
-     *
-     * @param id ID of tag to detect.
-     * @return Information about the tag detected.
-     */
-    @Nullable
-    public AprilTagDetection detectTag(int id) {
-//        ArrayList<AprilTagDetection> t = tagProcessor.getDetections();
-//        for (int i = 0; i < t.size(); i++) if (t.get(i).id == id) return t.get(i);
-        return null;
-    }
-
-    /**
-     * Returns information about a tag with the specified ID if it is detected within a designated
-     * timeout period.
-     *
-     * @param id      ID of tag to detect.
-     * @param timeout Detection timeout (seconds).
-     * @return Information about the tag detected.
-     */
-    @Nullable
-    public AprilTagDetection detectTag(int id, double timeout) {
-        AprilTagDetection a;
-        while (active() && (runtime.milliseconds() < runtime.milliseconds() + timeout))
-            if ((a = detectTag(id)) != null) return a;
-        return null;
-    }
-
-    /**
-     * Aligns the robot in front of the AprilTag.
-     *
-     * @param id ID of tag to align with.
-     */
-    public void align(int id) {
-        AprilTagDetection a = detectTag(id, 1);
-        turn(0);
-        while (active() && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
-            if ((a = detectTag(id, 1)) == null) return;
-            print("Strafe", a.ftcPose.x);
-            strafe(a.ftcPose.x);
-            if ((a = detectTag(id, 1)) == null) return;
-            print("Drive", -a.ftcPose.y + 5);
-            drive(-a.ftcPose.y + 2);
-            if ((a = detectTag(id, 1)) == null) return;
-            print("Turn", a.ftcPose.yaw / 2);
-            turn(a.ftcPose.yaw / 2);
-            update();
-        }
     }
 
     /**
@@ -822,7 +813,7 @@ public abstract class Base extends LinearOpMode {
             else verticalMotorB.setPower(basePower);
 
             // If we press the touch sensor, reset encoders
-            if (touchSensor != null && touchSensor.getState()) {
+            if (verticalTouchSensor != null && verticalTouchSensor.getState()) {
                 verticalMotorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 verticalMotorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 verticalMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -844,8 +835,12 @@ public abstract class Base extends LinearOpMode {
         verticalMotorB.setPower(0);
     }
 
+    /**
+     * Holds the vertical lift motor at a specified encoder mark
+     *
+     * @param vertGoal Number of encoders from zero position to turn the motor to
+     */
     public void holdVerticalLift(int vertGoal) {
-        hold = true;
         while (active() && hold) {
             if (verticalMotorA == null) return;
             int vertA = verticalMotorA.getCurrentPosition();
@@ -869,27 +864,19 @@ public abstract class Base extends LinearOpMode {
         moveVerticalLift(V_LIFT_BOUNDS[1]);
     }
 
-//    /**
-//     * Initializes the AprilTag processor.
-//     *
-//     * @param camera The camera to use.
-//     */
-//    private void initProcessors(WebcamName camera) {
-//        tagProcessor = new AprilTagProcessor.Builder()
-//                .setDrawAxes(true)
-//                .setDrawCubeProjection(true)
-//                .setDrawTagID(true)
-//                .setDrawTagOutline(true)
-//                .build();
-//
-//        VisionPortal.Builder builder = new VisionPortal.Builder();
-//
-//        builder.setCamera(camera);
-//        builder.enableLiveView(true);
-//        builder.addProcessor(tagProcessor);
-//
-//        visionPortal = builder.build();
-//    }
+    /**
+     * Gets the position of the vertical lift
+     *
+     * @return int, average encoder value of the vertical lift motors
+     */
+    public int getVertLiftPos() {
+        int vertA = verticalMotorA.getCurrentPosition();
+        int vertB = verticalMotorB.getCurrentPosition();
+        int vertAvg = (vertA + vertB) / 2;
+        if (vertB == 0 && vertA > 100) vertAvg = vertA;
+        if (vertA == 0 && vertB > 100) vertAvg = vertB;
+        return vertAvg;
+    }
 
     /**
      * A less space consuming way to add telemetry.
@@ -981,8 +968,8 @@ public abstract class Base extends LinearOpMode {
         if (specimenServo == null) print("Specimen Servo", "Disconnected");
         else print("Specimen Servo Position", specimenServo.getPosition());
 
-        if (touchSensor == null) print("Touch Sensor", "Disconnected");
-        else print("Touch Sensor Pressed", touchSensor.getState());
+        if (verticalTouchSensor == null) print("Touch Sensor", "Disconnected");
+        else print("Touch Sensor Pressed", verticalTouchSensor.getState());
         if (wristServo == null) print("Intake Servo", "Disconnected");
 
         telemetry.update();
