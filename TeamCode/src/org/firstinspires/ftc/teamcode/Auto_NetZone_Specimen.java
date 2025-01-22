@@ -8,7 +8,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "!!!Net Zone Specimen")
+@Autonomous(name = "Net Zone Specimen", group = "!")
 public class Auto_NetZone_Specimen extends Base {
 
     volatile boolean tele = false;
