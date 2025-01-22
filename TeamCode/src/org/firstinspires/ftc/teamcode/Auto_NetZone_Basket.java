@@ -9,7 +9,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "!!!Net Zone Basket")
+@Autonomous(name = "Net Zone Basket", group="!")
 public class Auto_NetZone_Basket extends Base {
 
     volatile boolean tele = false;
@@ -18,7 +18,7 @@ public class Auto_NetZone_Basket extends Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        setup(new Pose2d(48 - ROBOT_WIDTH / 2 - .5, 72 - .5 - ROBOT_LENGTH / 2, toRadians(180)));
+        setup(new Pose2d(48 - ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2, toRadians(180)));
 
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
