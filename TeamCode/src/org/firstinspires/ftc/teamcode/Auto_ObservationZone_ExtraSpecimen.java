@@ -42,16 +42,16 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
         s(.5);
 
         Trajectory trajectory = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(-37, 21), Math.toRadians(-90))
+                .strafeLeft(26)
                 .build();
         currentPose = trajectory.end();
-        Trajectory trajectory_5 = drive.trajectoryBuilder(currentPose)
+        Trajectory trajectory_5 = drive.trajectoryBuilder(currentPose, true)
                 .splineTo(new Vector2d(-36 - 11, 8), Math.toRadians(180))
                 .build();
         currentPose = trajectory_5.end();
-        Trajectory trajectory1 = drive.trajectoryBuilder(currentPose)
+        Trajectory trajectory1 = drive.trajectoryBuilder(currentPose, true)
                 .lineTo(new Vector2d(currentPose.getX(), 72 - ROBOT_LENGTH - 2))
-                .splineTo(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2), Math.toRadians(90))
                 .build();
         currentPose = trajectory1.end();
         drive.followTrajectory(trajectory);
