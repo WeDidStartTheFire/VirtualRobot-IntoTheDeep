@@ -92,7 +92,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
         closeSpecimenServo();
         s(.5);
         Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
-                .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 29, toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 29, toRadians(90)))
                 .build();
         currentPose = trajectory5.end();
         driveThread = new Thread(() -> drive.followTrajectory(trajectory5));
