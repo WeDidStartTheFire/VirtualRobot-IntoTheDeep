@@ -9,7 +9,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Net Zone Specimen")
+@Autonomous(name = "Net Zone Specimen", group="!")
 public class Auto_NetZone_Specimen extends Base {
 
     volatile boolean tele = false;
@@ -76,7 +76,7 @@ public class Auto_NetZone_Specimen extends Base {
         drive.followTrajectory(trajectory3);
         strafe(42, LEFT);
 
-        Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
+        Trajectory trajectory5 = drive.trajectoryBuilder(currentPose)
                 .splineToConstantHeading(new Vector2d(40, 20 - ROBOT_WIDTH / 2), toRadians(0))
                 .splineToConstantHeading(new Vector2d(16 + ROBOT_WIDTH / 2, 20 - ROBOT_WIDTH / 2), toRadians(0))
                 .build();
