@@ -19,7 +19,7 @@ public class Auto_ObservationZone_Specimen extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
         setup(new Pose2d(-ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2, toRadians(90)));
-//        setup();
+
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
         closeSpecimenServo();
@@ -49,8 +49,6 @@ public class Auto_ObservationZone_Specimen extends Base {
         currentPose = trajectory.end();
         Trajectory trajectory_5 = drive.trajectoryBuilder(currentPose, true)
                 .splineTo(new Vector2d(-36 - 5, 8), toRadians(180))
-//                .splineToConstantHeading(new Vector2d(-36 - 8, 72 - 20), toRadians(180))
-//                .splineToConstantHeading(new Vector2d(-36 - 11, 24), toRadians(180))
                 .splineToConstantHeading(new Vector2d(-36 - 11, 72 - 10), toRadians(180))
                 .build();
         currentPose = trajectory_5.end();
@@ -59,25 +57,17 @@ public class Auto_ObservationZone_Specimen extends Base {
         retractVerticalLift();
 
         Trajectory trajectory1 = drive.trajectoryBuilder(currentPose)
-//                .splineToConstantHeading(new Vector2d(currentPose.getX(), 13), toRadians(180))
                 .splineToConstantHeading(new Vector2d(-36 - 14, 8), toRadians(180))
                 .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2), toRadians(180))
                 .build();
         currentPose = trajectory1.end();
-//        Trajectory trajectory1_5 = drive.trajectoryBuilder(currentPose)
-//                .lineTo(new Vector2d(currentPose.getX(), 72 - ROBOT_LENGTH / 2))
-//                .build();
-//        currentPose = trajectory1_5.end();
         drive.followTrajectory(trajectory1);
-//        drive.followTrajectory(trajectory1_5);
 
         Trajectory trajectory2 = drive.trajectoryBuilder(currentPose, true)
-//                .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 29 + 14, toRadians(90)))
                 .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 29, toRadians(90)))
                 .build();
         currentPose = trajectory2.end();
         driveThread = new Thread(() -> drive.followTrajectory(trajectory2));
-//        Thread driveThread1 = new Thread(() -> drive(14, BACKWARD));
         liftThread = new Thread(liftTask);
         holdLift = new Thread(holdLiftTask);
         closeSpecimenServo();
@@ -90,8 +80,6 @@ public class Auto_ObservationZone_Specimen extends Base {
             liftThread.join();
             holdLift.start();
             driveThread.join();
-//            driveThread1.start();
-//            driveThread1.join();
         } catch (InterruptedException e) {
             except(e.getStackTrace());
         }
@@ -103,42 +91,10 @@ public class Auto_ObservationZone_Specimen extends Base {
 
         Trajectory trajectory4 = drive.trajectoryBuilder(currentPose)
                 .lineToLinearHeading(new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(0)))
-//                .lineToLinearHeading(new Pose2d(-36 - 11, 72 - ROBOT_LENGTH, toRadians(-90)))
                 .build();
         currentPose = trajectory4.end();
-//        Trajectory trajectory5 = drive.trajectoryBuilder(currentPose)
-//                .splineTo(new Vector2d(-ROBOT_WIDTH / 2 - 4, 72 - ROBOT_LENGTH / 2 - 29 + 14), toRadians(90))
-//                .build();
-//        currentPose = trajectory5.end();
-//        driveThread = new Thread(() -> drive.followTrajectory(trajectory5));
-//        driveThread1 = new Thread(() -> drive(14, BACKWARD));
-//        liftThread = new Thread(liftTask);
-//        holdLift = new Thread(holdLiftTask);
         drive.followTrajectory(trajectory4);
         retractVerticalLift();
-//        closeSpecimenServo();
-//        s(.5);
-//        moveVerticalLift(100);
-//        driveThread.start();
-//        liftThread.start();
-//        // Wait for both threads to complete
-//        try {
-//            liftThread.join();
-//            holdLift.start();
-//            driveThread.join();
-//            driveThread1.start();
-//            driveThread1.join();
-//        } catch (InterruptedException e) {
-//            except(e.getStackTrace());
-//        }
-//        hold = false;
-//        holdLift.join();
-//        moveVerticalLift(V_LIFT_GOALS[3] - 400);
-//        openSpecimenServo();
-//        s(.5);
-//
-//        tele = false;
-//        telemetryThread.join();
     }
 
     public void telemetryLoop() {
