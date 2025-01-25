@@ -9,7 +9,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Observation Zone Extra Specimen")
+@Autonomous(name = "Observation Zone Extra Specimen", group="!")
 public class Auto_ObservationZone_ExtraSpecimen extends Base {
 
     volatile boolean tele = true;
@@ -49,7 +49,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
         currentPose = trajectory.end();
         Trajectory trajectory_5 = drive.trajectoryBuilder(currentPose, true)
                 .splineTo(new Vector2d(-36 - 7, 8), toRadians(180))
-                .splineToConstantHeading(new Vector2d(-36 - 11, 72 - ROBOT_LENGTH - 2), toRadians(180))
+                .splineToConstantHeading(new Vector2d(-36 - 13, 72 - 20), toRadians(180))
                 .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2), toRadians(180))
                 .build();
         drive.followTrajectory(trajectory);
@@ -116,7 +116,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
         s(.5);
 
         Trajectory trajectory6 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(-36 - 11, 72 - ROBOT_LENGTH), toRadians(-90))
+                .lineToLinearHeading(new Pose2d(-36 - 11, 72 - ROBOT_LENGTH, toRadians(-90)))
                 .build();
         currentPose = trajectory6.end();
         drive.followTrajectory(trajectory6);
