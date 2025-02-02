@@ -31,13 +31,9 @@ public class Auto_NetZone_Specimen extends Base {
         driveThread.start();
         liftThread.start();
         // Wait for both threads to complete
-        try {
-            liftThread.join();
-            holdLift.start();
-            driveThread.join();
-        } catch (InterruptedException e) {
-            except(e.getStackTrace());
-        }
+        liftThread.join();
+        holdLift.start();
+        driveThread.join();
         hold = false;
         holdLift.join();
         moveVerticalLift(V_LIFT_GOALS[3] - 400);
@@ -53,11 +49,7 @@ public class Auto_NetZone_Specimen extends Base {
         liftThread.start();
 
         drive.followTrajectory(trajectory1);
-        try {
-            liftThread.join();
-        } catch (InterruptedException e) {
-            except(e.getStackTrace());
-        }
+        liftThread.join();
         strafe(52.5, LEFT);
 
         Trajectory trajectory2 = drive.trajectoryBuilder(currentPose)

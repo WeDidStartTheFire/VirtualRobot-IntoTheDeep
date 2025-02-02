@@ -25,13 +25,9 @@ public class Auto_Test extends Base {
         driveThread.start();
         liftThread.start();
         // Wait for both threads to complete
-        try {
-            liftThread.join();
-            holdLift.start();
-            driveThread.join();
-        } catch (InterruptedException e) {
-            except(e.getStackTrace());
-        }
+        liftThread.join();
+        holdLift.start();
+        driveThread.join();
         hold = false;
         holdLift.join();
         moveVerticalLift(V_LIFT_GOALS[3] - 400);
@@ -74,15 +70,11 @@ public class Auto_Test extends Base {
         driveThread.start();
         liftThread.start();
         // Wait for both threads to complete
-        try {
-            liftThread.join();
-            holdLift.start();
-            driveThread.join();
-            driveThread1.start();
-            driveThread1.join();
-        } catch (InterruptedException e) {
-            except(e.getStackTrace());
-        }
+        liftThread.join();
+        holdLift.start();
+        driveThread.join();
+        driveThread1.start();
+        driveThread1.join();
         hold = false;
         holdLift.join();
         moveVerticalLift(V_LIFT_GOALS[3] - 400);
@@ -93,36 +85,9 @@ public class Auto_Test extends Base {
                 .splineTo(new Vector2d(-36 - 20, 72 - ROBOT_LENGTH / 2), Math.toRadians(-90))
                 .build();
         currentPose = trajectory4.end();
-//        Trajectory trajectory5 = drive.trajectoryBuilder(currentPose)
-//                .splineTo(new Vector2d(-ROBOT_WIDTH / 2 - 4, 72 - ROBOT_LENGTH / 2 - 29 + 14), Math.toRadians(90))
-//                .build();
-//        currentPose = trajectory5.end();
-//        driveThread = new Thread(() -> drive.followTrajectory(trajectory5));
-//        driveThread1 = new Thread(() -> drive(14, BACKWARD));
-//        liftThread = new Thread(liftTask);
-//        holdLift = new Thread(holdLiftTask);
         drive.followTrajectory(trajectory4);
         retractVerticalLift();
-//        closeSpecimenServo();
-//        s(.5);
-//        moveVerticalLift(100);
-//        driveThread.start();
-//        liftThread.start();
-//        // Wait for both threads to complete
-//        try {
-//            liftThread.join();
-//            holdLift.start();
-//            driveThread.join();
-//            driveThread1.start();
-//            driveThread1.join();
-//        } catch (InterruptedException e) {
-//            except(e.getStackTrace());
-//        }
-//        hold = false;
-//        holdLift.join();
-//        moveVerticalLift(V_LIFT_GOALS[3] - 400);
-//        openSpecimenServo();
-//        s(.5);
+
     }
 }
 

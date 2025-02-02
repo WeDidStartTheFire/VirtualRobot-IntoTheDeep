@@ -79,6 +79,7 @@ public abstract class Base extends LinearOpMode {
     public static final double ROBOT_LENGTH = 18;
     /** Dimension left to right on robot in inches */
     public static final double ROBOT_WIDTH = 18;
+    boolean auto, running, loop;
 
     double goalAngle = 0;
     String test = "";
@@ -165,6 +166,7 @@ public abstract class Base extends LinearOpMode {
         try {
             drive = new SampleMecanumDrive(hardwareMap);
             drive.setPoseEstimate(currentPose);
+            drive.breakFollowing();
         } catch (IllegalArgumentException e) {
             except("SparkFun Sensor not connected");
             test = e.getMessage();
@@ -219,6 +221,8 @@ public abstract class Base extends LinearOpMode {
         print("Status", "Initialized");
         print("Hub Name", hubName);
         update();
+
+        sleep(100);
 
         while (!isStarted() && !isStopRequested()) {
             useOdometry = ((useOdometry || gamepad1.b) && !gamepad1.a);
@@ -938,6 +942,12 @@ public abstract class Base extends LinearOpMode {
         if (gamepad1.a) printSeconds("Confirmed.", .5);
         else printSeconds("Canceled.", .5);
         return gamepad1.a;
+    }
+
+    /** Repeatedly reports info about the robot via telemetry. Stopped by setting loop to false. */
+    public void telemetryLoop() {
+        loop = true;
+        while (active() && loop) updateAll();
     }
 
     /** Adds information messages to telemetry and updates it */
