@@ -41,7 +41,7 @@ public abstract class Base extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB;
-    public Servo wristServo, basketServo, specimenServo, intakeServo;
+    public Servo wristServo, wristServoY, basketServo, specimenServo, intakeServo;
     public DigitalChannel verticalTouchSensor;
     public IMU imu;
     /*
@@ -79,7 +79,7 @@ public abstract class Base extends LinearOpMode {
     public static final double ROBOT_LENGTH = 18;
     /** Dimension left to right on robot in inches */
     public static final double ROBOT_WIDTH = 18;
-    boolean auto, running, loop;
+    public volatile boolean auto, running, loop, holdWrist;
 
     double goalAngle = 0;
     String test = "";
@@ -139,6 +139,11 @@ public abstract class Base extends LinearOpMode {
             wristServo = hardwareMap.get(Servo.class, "pixelBackServo"); // Port 0
         } catch (IllegalArgumentException e) {
             except("intakeServo (pixelBackServo) not connected");
+        }
+        try {
+            wristServoY = hardwareMap.get(Servo.class, "wristServoY"); // Expansion Hub 2
+        } catch (IllegalArgumentException e) {
+            except("wristServoY not connected");
         }
         try {
             intakeServo = hardwareMap.get(Servo.class, "trayTiltingServo"); // Port 1
@@ -626,6 +631,26 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
+     * Moves the wrist servo to the specified position.
+     *
+     * @param position The position to move the intake servo to.
+     */
+    public void moveWristServoY(double position) {
+        if (wristServoY != null) wristServoY.setPosition(position);
+    }
+
+    /** Retracts the wrist Y servo */
+    public void retractWristServoY() {
+        moveWristServoY(0);
+    }
+
+    /** Hovers the wrist Y servo */
+    public void hoverWristServoY() {
+        moveWristServoY(0.9);
+    }
+
+
+    /**
      * Moves the intake servo to the specified position.
      *
      * @param position The position to move the intake servo to.
@@ -729,6 +754,12 @@ public abstract class Base extends LinearOpMode {
     public void retractWrist() {
         moveWrist(0);
     }
+
+    /** Holds the wrist */
+    public void holdWrist(int holdPos) {
+        return;
+    }
+
 
     /**
      * Sends an exception message to Driver Station telemetry.

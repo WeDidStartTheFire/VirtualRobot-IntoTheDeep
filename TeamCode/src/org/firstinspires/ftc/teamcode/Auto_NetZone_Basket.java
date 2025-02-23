@@ -9,7 +9,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Net Zone Basket")
+@Autonomous(name = "Net Zone Basket", group="!Primary")
 public class Auto_NetZone_Basket extends Base {
 
     volatile boolean tele = false;

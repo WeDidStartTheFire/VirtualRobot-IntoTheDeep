@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
 import static org.firstinspires.ftc.teamcode.Base.Dir.FORWARD;
-
 import static java.lang.Math.toRadians;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -10,8 +9,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Observation Zone Extra Specimen")
-public class Auto_ObservationZone_ExtraSpecimen extends Base {
+@Autonomous(name="Observation Zone no Line/Spline To")
+public class Auto_ObservationZone_noLineSplineTo extends Base {
 
     Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);
     Runnable holdLiftTask = () -> holdVerticalLift(V_LIFT_GOALS[3]);
@@ -24,12 +23,16 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
         running = true;
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
-        Thread driveThread = new Thread(() -> drive(31, BACKWARD));
+        Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
+        Thread holdWrist = new Thread(() -> holdWrist(16));
         try {
             closeSpecimenServo();
-            moveWrist(16);
+            moveWristServoY(.5);
+            s(.5);
+//            moveWrist(16);
+            holdWrist.start();
             driveThread.start();
             liftThread.start();
             liftThread.join();
@@ -39,7 +42,6 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
             holdLift.join();
             moveVerticalLift(V_LIFT_GOALS[3] - 400);
             openSpecimenServo();
-            s(.5);
 
             drive(4, FORWARD);
             Trajectory trajectory = drive.trajectoryBuilder(currentPose)
@@ -49,24 +51,30 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
             Trajectory trajectory_5 = drive.trajectoryBuilder(currentPose, true)
                     .splineTo(new Vector2d(-36 - 7, 8), toRadians(180))
                     .splineToConstantHeading(new Vector2d(-36 - 8, 72 - 20), toRadians(180))
-                    .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2 - 1), toRadians(180))
+//                    .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2 - 1), toRadians(180))
                     .build();
             currentPose = trajectory_5.end();
+            Trajectory trajectory1 = drive.trajectoryBuilder(currentPose, true)
+                    .lineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2 - 1))
+                    .build();
+            currentPose = trajectory1.end();
             liftThread = new Thread(this::retractVerticalLift);
             liftThread.start();
             drive.followTrajectory(trajectory);
             drive.followTrajectory(trajectory_5);
             liftThread.join();
+            drive.followTrajectory(trajectory1);
+            s(.5);
             closeSpecimenServo();
             s(.5);
             moveVerticalLift(100);
 
             Trajectory trajectory2 = drive.trajectoryBuilder(currentPose, true)
-                    .splineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 31 + 14, toRadians(90)), toRadians(90))
+                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30 + 14, toRadians(90)))
                     .build();
             currentPose = trajectory2.end();
             Trajectory trajectory2_5 = drive.trajectoryBuilder(currentPose, true)
-                    .lineToConstantHeading(new Vector2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 31))
+                    .lineToConstantHeading(new Vector2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30))
                     .build();
             driveThread = new Thread(() -> drive.followTrajectory(trajectory2));
             liftThread = new Thread(liftTask);
@@ -85,42 +93,43 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
             moveVerticalLift(V_LIFT_GOALS[3] - 400);
             openSpecimenServo();
             s(.5);
-//
-//            Trajectory trajectory4 = drive.trajectoryBuilder(currentPose)
-//                    .lineToLinearHeading(new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(0)))
-//                    .build();
-//            currentPose = trajectory4.end();
-//            liftThread = new Thread(this::retractVerticalLift);
-//            liftThread.start();
-//            drive.followTrajectory(trajectory4);
-//            liftThread.join();
-//            closeSpecimenServo();
-//            s(.5);
-//            Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
-//                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 31, toRadians(90)))
-//                    .build();
-//            currentPose = trajectory5.end();
-//            driveThread = new Thread(() -> drive.followTrajectory(trajectory5));
-//            liftThread = new Thread(liftTask);
-//            holdLift = new Thread(holdLiftTask);
-//            moveVerticalLift(100);
-//            driveThread.start();
-//            s(.5);
-//            liftThread.start();
-//            liftThread.join();
-//            holdLift.start();
-//            driveThread.join();
-//            hold = false;
-//            holdLift.join();
-//            moveVerticalLift(V_LIFT_GOALS[3] - 400);
-//            openSpecimenServo();
-//            s(.5);
-//
-//            Trajectory trajectory6 = drive.trajectoryBuilder(currentPose)
-//                    .lineToLinearHeading(new Pose2d(-36 - 11, 72 - ROBOT_LENGTH, toRadians(-90)))
-//                    .build();
-//            currentPose = trajectory6.end();
-//            drive.followTrajectory(trajectory6);
+
+
+            Trajectory trajectory4 = drive.trajectoryBuilder(currentPose)
+                    .lineToLinearHeading(new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(0)))
+                    .build();
+            currentPose = trajectory4.end();
+            liftThread = new Thread(this::retractVerticalLift);
+            liftThread.start();
+            drive.followTrajectory(trajectory4);
+            liftThread.join();
+            closeSpecimenServo();
+            s(.5);
+            Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
+                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 30, toRadians(90)))
+                    .build();
+            currentPose = trajectory5.end();
+            driveThread = new Thread(() -> drive.followTrajectory(trajectory5));
+            liftThread = new Thread(liftTask);
+            holdLift = new Thread(holdLiftTask);
+            moveVerticalLift(100);
+            driveThread.start();
+            s(.5);
+            liftThread.start();
+            liftThread.join();
+            holdLift.start();
+            driveThread.join();
+            hold = false;
+            holdLift.join();
+            moveVerticalLift(V_LIFT_GOALS[3] - 400);
+            openSpecimenServo();
+            s(.5);
+
+            Trajectory trajectory6 = drive.trajectoryBuilder(currentPose)
+                    .lineToLinearHeading(new Pose2d(-36 - 11, 72 - ROBOT_LENGTH, toRadians(-90)))
+                    .build();
+            currentPose = trajectory6.end();
+            drive.followTrajectory(trajectory6);
         } finally {
             running = false;
             hold = false;
@@ -129,6 +138,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
             driveThread.interrupt();
             liftThread.interrupt();
             holdLift.interrupt();
+            holdWrist.interrupt();
             stop();
         }
     }
