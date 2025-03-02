@@ -3,15 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
 import static org.firstinspires.ftc.teamcode.Base.Dir.FORWARD;
 import static org.firstinspires.ftc.teamcode.Base.Dir.LEFT;
-import static org.firstinspires.ftc.teamcode.Base.Dir.RIGHT;
-import static java.lang.Math.atan;
-import static java.lang.Math.sqrt;
-import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="Observation Zone No Line/Spline To")

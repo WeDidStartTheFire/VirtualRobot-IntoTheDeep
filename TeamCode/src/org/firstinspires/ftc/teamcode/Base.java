@@ -449,7 +449,7 @@ public abstract class Base extends LinearOpMode {
     public void lineTo(Pose2d position, boolean reverse) {
         if (!useOdometry) return;
         Pose2d delta_pos = position.minus(currentPose);  // position - currentPose?
-        turn(simplifyAngle(toDegrees(toRadians(reverse ? 180 : 0) + atan2(delta_pos.getX(), delta_pos.getY()) + currentPose.getHeading())));
+        turn(simplifyAngle(toDegrees(toRadians(reverse ? 180 : 0) + atan2(delta_pos.getY(), delta_pos.getX()) + currentPose.getHeading())));
         drive(hypot(delta_pos.getX(), delta_pos.getY()), reverse ? BACKWARD : FORWARD);
         turn(simplifyAngle(toDegrees(position.getHeading() - currentPose.getHeading())));
     }
