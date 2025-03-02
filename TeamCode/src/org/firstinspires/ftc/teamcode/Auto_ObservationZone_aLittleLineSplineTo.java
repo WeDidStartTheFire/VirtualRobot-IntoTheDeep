@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
 import static org.firstinspires.ftc.teamcode.Base.Dir.FORWARD;
+import static org.firstinspires.ftc.teamcode.Base.Dir.LEFT;
 import static java.lang.Math.toRadians;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -9,8 +10,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name="Observation Zone no Line/Spline To")
-public class Auto_ObservationZone_noLineSplineTo extends Base {
+@Autonomous(name="Observation Zone a little Line/Spline To")
+public class Auto_ObservationZone_aLittleLineSplineTo extends Base {
 
     Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);
     Runnable holdLiftTask = () -> holdVerticalLift(V_LIFT_GOALS[3]);
@@ -31,7 +32,7 @@ public class Auto_ObservationZone_noLineSplineTo extends Base {
             closeSpecimenServo();
             moveWristServoY(.5);
             s(.5);
-//            moveWrist(16);
+            moveWrist(16);
             holdWrist.start();
             driveThread.start();
             liftThread.start();
@@ -44,26 +45,23 @@ public class Auto_ObservationZone_noLineSplineTo extends Base {
             openSpecimenServo();
 
             drive(4, FORWARD);
-            Trajectory trajectory = drive.trajectoryBuilder(currentPose)
-                    .lineTo(new Vector2d(currentPose.getX() - 26, currentPose.getY() + 2))
-                    .build();
-            currentPose = trajectory.end();
-            Trajectory trajectory_5 = drive.trajectoryBuilder(currentPose, true)
-                    .splineTo(new Vector2d(-36 - 7, 8), toRadians(180))
-                    .splineToConstantHeading(new Vector2d(-36 - 8, 72 - 20), toRadians(180))
-//                    .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2 - 1), toRadians(180))
-                    .build();
-            currentPose = trajectory_5.end();
-            Trajectory trajectory1 = drive.trajectoryBuilder(currentPose, true)
-                    .lineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2 - 1))
-                    .build();
-            currentPose = trajectory1.end();
             liftThread = new Thread(this::retractVerticalLift);
             liftThread.start();
-            drive.followTrajectory(trajectory);
-            drive.followTrajectory(trajectory_5);
-            liftThread.join();
+            strafe(26, LEFT);
+            Trajectory trajectory1 = drive.trajectoryBuilder(currentPose, true)
+                    .splineTo(new Vector2d(-36 - 7, 8), toRadians(180))
+                    .splineToConstantHeading(new Vector2d(-36 - 8, 72 - ROBOT_LENGTH / 2 - 1), toRadians(180))
+//                    .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2 - 1), toRadians(180))
+                    .build();
+            currentPose = trajectory1.end();
+//            Trajectory trajectory1 = drive.trajectoryBuilder(currentPose, true)
+//                    .lineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2 - 1))
+//                    .build();
+//            currentPose = trajectory1.end();
             drive.followTrajectory(trajectory1);
+            liftThread.join();
+            drive(19, BACKWARD);
+//            drive.followTrajectory(trajectory1);
             s(.5);
             closeSpecimenServo();
             s(.5);
@@ -73,9 +71,6 @@ public class Auto_ObservationZone_noLineSplineTo extends Base {
                     .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30 + 14, toRadians(90)))
                     .build();
             currentPose = trajectory2.end();
-            Trajectory trajectory2_5 = drive.trajectoryBuilder(currentPose, true)
-                    .lineToConstantHeading(new Vector2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30))
-                    .build();
             driveThread = new Thread(() -> drive.followTrajectory(trajectory2));
             liftThread = new Thread(liftTask);
             holdLift = new Thread(holdLiftTask);
@@ -86,7 +81,7 @@ public class Auto_ObservationZone_noLineSplineTo extends Base {
             liftThread.join();
             holdLift.start();
             driveThread.join();
-            drive.followTrajectory(trajectory2_5);
+            drive(14, BACKWARD);
 
             hold = false;
             holdLift.join();
@@ -96,17 +91,19 @@ public class Auto_ObservationZone_noLineSplineTo extends Base {
 
 
             Trajectory trajectory4 = drive.trajectoryBuilder(currentPose)
-                    .lineToLinearHeading(new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(0)))
+                    .lineToLinearHeading(new Pose2d(-36 - 8, 72 - ROBOT_LENGTH / 2 - 1, toRadians(0)))
                     .build();
             currentPose = trajectory4.end();
             liftThread = new Thread(this::retractVerticalLift);
             liftThread.start();
             drive.followTrajectory(trajectory4);
             liftThread.join();
+            drive(19, BACKWARD);
             closeSpecimenServo();
             s(.5);
+
             Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
-                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 30, toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 30 + 14, toRadians(90)))
                     .build();
             currentPose = trajectory5.end();
             driveThread = new Thread(() -> drive.followTrajectory(trajectory5));
@@ -119,6 +116,7 @@ public class Auto_ObservationZone_noLineSplineTo extends Base {
             liftThread.join();
             holdLift.start();
             driveThread.join();
+            drive(14, BACKWARD);
             hold = false;
             holdLift.join();
             moveVerticalLift(V_LIFT_GOALS[3] - 400);
@@ -126,7 +124,7 @@ public class Auto_ObservationZone_noLineSplineTo extends Base {
             s(.5);
 
             Trajectory trajectory6 = drive.trajectoryBuilder(currentPose)
-                    .lineToLinearHeading(new Pose2d(-36 - 11, 72 - ROBOT_LENGTH, toRadians(-90)))
+                    .lineToConstantHeading(new Vector2d(-36 - 11, 72 - ROBOT_LENGTH))
                     .build();
             currentPose = trajectory6.end();
             drive.followTrajectory(trajectory6);
