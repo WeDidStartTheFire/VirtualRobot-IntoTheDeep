@@ -101,40 +101,41 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base{
 //            currentPose = trajectory4.end();
             liftThread = new Thread(this::retractVerticalLift);
             liftThread.start();
-            lineTo(new Pose2d(-36 - 8, 72 - ROBOT_LENGTH / 2 - 1, toRadians(0)), true);
-//            drive.followTrajectory(trajectory4);
-            liftThread.join();
-            drive(19, BACKWARD);
-            closeSpecimenServo();
-            s(.5);
-
-//            Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
-//                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 30 + 14, toRadians(90)))
-//                    .build();
-//            currentPose = trajectory5.end();
-            driveThread = new Thread(() -> lineTo(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 30 + 14, toRadians(90)), true));
-            liftThread = new Thread(liftTask);
-            holdLift = new Thread(holdLiftTask);
-            moveVerticalLift(100);
-            driveThread.start();
-            s(.5);
-            liftThread.start();
-            liftThread.join();
-            holdLift.start();
-            driveThread.join();
-            drive(14, BACKWARD);
-            hold = false;
-            holdLift.join();
-            moveVerticalLift(V_LIFT_GOALS[3] - 400);
-            openSpecimenServo();
-            s(.5);
+//            lineTo(new Pose2d(-36 - 8, 72 - ROBOT_LENGTH / 2 - 1, toRadians(0)), true, true);
+////            drive.followTrajectory(trajectory4);
+//            liftThread.join();
+//            drive(19, BACKWARD);
+//            closeSpecimenServo();
+//            s(.5);
+//
+////            Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
+////                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 30 + 14, toRadians(90)))
+////                    .build();
+////            currentPose = trajectory5.end();
+//            driveThread = new Thread(() -> lineTo(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 30 + 14, toRadians(90)), true));
+//            liftThread = new Thread(liftTask);
+//            holdLift = new Thread(holdLiftTask);
+//            moveVerticalLift(100);
+//            driveThread.start();
+//            s(.5);
+//            liftThread.start();
+//            liftThread.join();
+//            holdLift.start();
+//            driveThread.join();
+//            drive(14, BACKWARD);
+//            hold = false;
+//            holdLift.join();
+//            moveVerticalLift(V_LIFT_GOALS[3] - 400);
+//            openSpecimenServo();
+//            s(.5);
 
 //            Trajectory trajectory6 = drive.trajectoryBuilder(currentPose)
 //                    .lineToConstantHeading(new Vector2d(-36 - 11, 72 - ROBOT_LENGTH))
 //                    .build();
 //            currentPose = trajectory6.end();
 //            drive.followTrajectory(trajectory6);
-            lineTo(new Pose2d(-36 - 11, 72 - ROBOT_LENGTH, toRadians(-90)), true);
+            lineTo(new Pose2d(-36 - 11, 72 - ROBOT_LENGTH, toRadians(-90)), true, true);
+            liftThread.join();
         } finally {
             running = false;
             hold = false;
