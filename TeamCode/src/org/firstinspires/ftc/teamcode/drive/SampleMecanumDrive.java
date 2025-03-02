@@ -122,8 +122,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-        rightRear.setDirection(DcMotor.Direction.REVERSE);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+//        rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftRear.setDirection(DcMotor.Direction.REVERSE);
+//        rightRear.setDirection(DcMotor.Direction.REVERSE);
 
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();
@@ -192,6 +194,11 @@ public class SampleMecanumDrive extends MecanumDrive {
         waitForIdle();
     }
 
+    public void breakFollowing() {
+        trajectorySequenceRunner.breakFollowing();
+        setMotorPowers(0,0,0,0);
+    }
+
     public Pose2d getLastError() {
         return trajectorySequenceRunner.getLastPoseError();
     }
@@ -203,8 +210,9 @@ public class SampleMecanumDrive extends MecanumDrive {
     }
 
     public void waitForIdle() {
-        while (!Thread.currentThread().isInterrupted() && isBusy())
-            update();
+        while (!Thread.currentThread().isInterrupted() && isBusy()) update();
+        if (Thread.currentThread().isInterrupted())
+            breakFollowing();
     }
 
     public boolean isBusy() {

@@ -2,21 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
-import static java.lang.Math.atan;
-import static java.lang.Math.cos;
 import static java.lang.Math.hypot;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.signum;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
-import static java.lang.Math.toRadians;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -27,8 +18,6 @@ public class TeleOp_MainTest extends Base {
     double axial,lateral, yaw;
 
     double leftFrontPower, rightFrontPower, leftBackPower, rightBackPower;
-
-    double max;
 
     double speedMultiplier;
     boolean touchSensorPressed = false;
@@ -80,7 +69,7 @@ public class TeleOp_MainTest extends Base {
             lateral = -xMove * SPEED_MULTIPLIER;
 
             joystickAngle = Math.atan2(gamepad1.right_stick_y, gamepad1.right_stick_x);
-            difference = simplifyAngleRadians(joystickAngle - angle + PI / 2);
+            difference = simplifyAngle(joystickAngle - angle + PI / 2, RADIANS);
 
             turnInput = (difference / Math.toRadians(20));
             turnInput = Math.max(-1.0, Math.min(1.0, turnInput));
@@ -160,7 +149,7 @@ public class TeleOp_MainTest extends Base {
                 power = 0;
                 if (gamepad1.dpad_right ^ gamepad1.dpad_left) {
                     // If the touch sensor isn't connected, assume it isn't pressed
-                    touchSensorPressed = touchSensor != null && touchSensor.getState();
+                    touchSensorPressed = verticalTouchSensor != null && verticalTouchSensor.getState();
                     if (gamepad1.dpad_right && !gamepad1.dpad_left)
                         power = liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1] ? speedMultiplier : 0;
                     else if (gamepad1.dpad_left && !gamepad1.dpad_right && !touchSensorPressed)
@@ -225,7 +214,7 @@ public class TeleOp_MainTest extends Base {
                 } else {
                     vertStopped = false;
                     // If the touch sensor isn't connected, assume it isn't pressed
-                    touchSensorPressed = touchSensor != null && touchSensor.getState();
+                    touchSensorPressed = verticalTouchSensor != null && verticalTouchSensor.getState();
                     if (touchSensorPressed) {
                         verticalMotorA.setMode(STOP_AND_RESET_ENCODER);
                         verticalMotorB.setMode(STOP_AND_RESET_ENCODER);

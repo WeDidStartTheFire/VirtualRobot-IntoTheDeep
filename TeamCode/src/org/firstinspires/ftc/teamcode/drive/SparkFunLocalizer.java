@@ -31,22 +31,22 @@ public class SparkFunLocalizer implements Localizer {
     @Override
     public Pose2d getPoseEstimate() {
         return new Pose2d(
-                -otosSensor.getPosition().y,
                 otosSensor.getPosition().x,
+                otosSensor.getPosition().y,
                 otosSensor.getPosition().h);
     }
 
     @Override
     public void setPoseEstimate(@NonNull Pose2d pose) {
         otosSensor.setPosition(
-                new SparkFunOTOS.Pose2D(pose.getY(), pose.getX(), pose.getHeading()));
+                new SparkFunOTOS.Pose2D(pose.getX(), pose.getY(), pose.getHeading()));
     }
 
     @Override
     public Pose2d getPoseVelocity() {
         return new Pose2d(
-                -otosSensor.getVelocity().y,
                 otosSensor.getVelocity().x,
+                otosSensor.getVelocity().y,
                 otosSensor.getVelocity().h);
     }
 
@@ -56,7 +56,7 @@ public class SparkFunLocalizer implements Localizer {
         otosSensor.setAngularUnit(AngleUnit.RADIANS);
         //        otosSensor.setAngularUnit(AngleUnit.DEGREES);
 
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 6.25, 0);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 0, 0);
         otosSensor.setOffset(offset);
 
         // 1.0: 1.0405900165999864826326556516607

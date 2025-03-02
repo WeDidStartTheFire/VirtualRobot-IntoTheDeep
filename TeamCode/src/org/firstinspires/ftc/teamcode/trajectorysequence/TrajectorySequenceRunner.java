@@ -302,4 +302,11 @@ public class TrajectorySequenceRunner {
     public boolean isBusy() {
         return currentTrajectorySequence != null;
     }
+
+    public void breakFollowing() {
+        for (TrajectoryMarker marker : remainingMarkers)
+            marker.getCallback().onMarkerReached();
+        remainingMarkers.clear();
+        currentTrajectorySequence = null;
+    }
 }
