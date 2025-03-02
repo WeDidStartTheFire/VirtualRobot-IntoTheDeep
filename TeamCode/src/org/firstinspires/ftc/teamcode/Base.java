@@ -13,9 +13,12 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.LEFT;
 import static org.firstinspires.ftc.teamcode.Base.Dir.RIGHT;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
+import static java.lang.Math.atan2;
+import static java.lang.Math.hypot;
 import static java.lang.Math.min;
 import static java.lang.Math.signum;
 import static java.lang.Math.toDegrees;
+import static java.lang.Math.toRadians;
 import static java.util.Locale.US;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -428,7 +431,8 @@ public abstract class Base extends LinearOpMode {
     public void turn(double degrees, Dir direction) {
         if (useOdometry) {
             int dir = direction == LEFT ? -1 : 1;
-            drive.turn(Math.toRadians(degrees * dir));
+            drive.turn(toRadians(degrees * dir));
+            currentPose = new Pose2d(currentPose.getX(), currentPose.getY(), currentPose.getHeading() + toRadians(degrees * dir));
         } else IMUTurn(degrees, direction);
     }
 
@@ -440,6 +444,18 @@ public abstract class Base extends LinearOpMode {
      */
     public void turn(double degrees) {
         turn(degrees, RIGHT);
+    }
+
+    public void lineTo(Pose2d position, boolean reverse) {
+        if (!useOdometry) return;
+        Pose2d delta_pos = position.minus(currentPose);  // position - currentPose?
+        turn(simplifyAngle(toDegrees(toRadians(reverse ? 180 : 0) + atan2(delta_pos.getX(), delta_pos.getY()) + currentPose.getHeading())));
+        drive(hypot(delta_pos.getX(), delta_pos.getY()), reverse ? BACKWARD : FORWARD);
+        turn(simplifyAngle(toDegrees(position.getHeading() - currentPose.getHeading())));
+    }
+
+    public void lineTo(Pose2d position) {
+        lineTo(position, false);
     }
 
     /**
@@ -986,6 +1002,7 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             Pose2d pos = drive.getPoseEstimate();
             print(String.format(US, "Pose :  X: %.2f, Y: %.2f, θ: %.2f°", pos.getX(), pos.getY(), toDegrees(pos.getHeading())));
+            print(String.format(US, "Current Pose :  X: %.2f, Y: %.2f, θ: %.2f°", currentPose.getX(), currentPose.getY(), toDegrees(currentPose.getHeading())));
         } else print("Odometry disabled");
         if (lf == null) telemetry.addData("Drive Train", "Disconnected");
         if (verticalMotorA == null) print("Vertical Lift Motors", "Disconnected");
